@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>THE HIT TIMES</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.tiny.cloud/1/gy5pjthnlmq41tsazbhlnu4xqc53eu5ad8yk9a4y7i0a0kx6/tinymce/5/tinymce.min.js"
+      referrerpolicy="origin"
+    ></script>
+
+    <script>
+      tinymce.init({
+        selector: "#description",
+      });
+    </script>
+  </head>
+
+  <style>
+    .roundbth {
+      border-radius: 25px;
+    }
+    body {
+      background: linear-gradient(
+        rgba(50, 176, 226, 0.5),
+        rgba(228, 102, 180, 0.5)
+      );
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+    .navbercolor {
+    }
+  </style>
+
+  <body>
+    <nav
+      class="navbar navbar-expand-sm navbar-light mb-3"
+      style="color: rgb(16, 97, 247)"
+    >
+      <div class="container">
+        <button
+          class="navbar-toggler mr-auto"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="/">Task Management System</a>
+        <a
+			  class="nav-link ml-auto btn btn-danger text-white roundbth px-3"
+			  sec:authorize="isAuthenticated()" th:href="@{/logout}">Logout</a
+			>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/"><b>Home</b></a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="createtask.html"
+                ><b>Create Tasks</b></a
+              >
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="display.html"><b>Display Tasks</b></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="http://localhost:8080/tasks"><b>JSON</b></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mb-5">
+      <div
+        class="card p-5"
+        style="
+          background: linear-gradient(
+            rgba(13, 178, 243, 0.5),
+            rgba(228, 102, 180, 0.5)
+          );
+          border-radius: 0px;
+        "
+      >
+
+          <h3 class="text-white">CREATE POST</h3>
+
+          <form class="form-group" action="javascript:postData()" method="post">
+            <h5 class="text-white">Title</h5>
+            <input
+              class="form-control"
+              id="title"
+              required
+              style="border-radius: 0px"
+              placeholder="Title"
+              type="text"
+              name="title"
+            />
+            <h5 class="text-white">Description</h5>
+            <textarea
+              id="description"
+              name="body"
+              rows="10"
+              cols="5"
+              placeholder="Body"
+            ></textarea>
+            <h5 class="text-white mt-2">Link</h5>
+            <select
+              class="form-control mt-3"
+              id="dropdown"
+              name="dropdown"
+              aria-label="Default select example"
+            >
+              <option value="00">Open</option>
+              <option value="01">Work in progess</option>
+              <option value="02">Closed</option></select
+            ><br />
+            <button type="submit" class="btn text-white btn-primary roundbth">
+              Submit
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    let taskId;
+    function loadTaskDetails() {
+        taskId = getParameterByName();
+        if (!taskId) {
+            console.error('Task ID not provided.');
+            return;
+        }
+
+        fetch(`http://localhost:8080/tasks/${taskId}`)
+            .then(response => response.json())
+            .then(task => {
+                document.getElementById('title').value = task.title;
+                document.getElementById('description').value = task.description;
+                console.log(task.status)
+                document.getElementById('dropdown').value = task.status;
+            })
+            .catch(error => console.error('Error fetching task details:', error));
+    }
+
+    loadTaskDetails();
+
+    // Function to extract query parameters from URL
+    function getParameterByName() {
+        const urlParams = sessionStorage.getItem('updateTaskId');
+
+        return urlParams;
+    }
+    const postData = async () => {
+       
+      const newTitle = document.getElementById('title').value;
+      const newDescription =  window.tinymce.activeEditor.getBody().textContent.trim();
+      const newStatus =  document.getElementById('dropdown').value;
+      console.log('guig')
+      console.log(newStatus)
+      const newData = { id:taskId, title: newTitle, description: newDescription, status:newStatus };
+      const res = await fetch(`http://localhost:8080/tasks/${taskId}`, {
+          method: "PUT",
+          body: JSON.stringify(newData),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        })
+        .catch(error => console.error('Error adding task:', error));
+
+        if (res.ok) {
+          console.log("ik")
+          window.location.href = 'display.html';
+        }
+
+    };
+  </script>
+
+
+  <script
+    src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"
+  ></script>
+</html>
