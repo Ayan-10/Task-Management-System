@@ -13,3 +13,11 @@
 
 
 Let me know if anything else is required
+
+# Features
+1. Login/Register to create, update, delete, or view the tasks
+2. Option to create tasks
+3. Display the tasks
+4. Edit each task
+5. Each task contains a title, description, and status and everything is editable
+
