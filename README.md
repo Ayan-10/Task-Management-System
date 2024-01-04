@@ -9,7 +9,7 @@
 6. You will find **TaskManagementSystem.java** class at `src/main/java/com/example
 /tms`
 7. Run **TaskManagementSystem.java**
-8. Now you have to open http://localhost:8080/ to go to the Task Managemnet System website
+8. Now you have to open http://localhost:8080/ to view to the Task Managemnet System website
 
 
 Let me know if anything else is required
